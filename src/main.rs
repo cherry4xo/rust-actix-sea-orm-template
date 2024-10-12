@@ -14,9 +14,9 @@ async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "info");
     std::env::set_var("RUST_BACKTRACE", "1");
 
-    if let Err(err) = block_on(models::run()) {
-        panic!("{}", err);
-    }
+    // if let Err(err) = block_on(models::run()) {
+    //     panic!("{}", err);
+    // }
     let db_url = format!("{DATABASE_URL}/{DATABASE_NAME}");
     let conn = Database::connect(db_url).await.unwrap();
     let state = AppState {conn: conn};
@@ -30,6 +30,7 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/users")
                     .service(users::create_user)
+                    .service(users::get_all_users)
             )
             .default_service(
                 web::route().to(root::page_not_found)

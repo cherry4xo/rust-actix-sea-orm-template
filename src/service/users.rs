@@ -1,6 +1,8 @@
 use uuid::Uuid;
+use std::vec::Vec;
 
 use crate::models::entities::{users, users::Entity as Users};
+use crate::schemas::users::UserGet;
 use sea_orm::*;
 
 pub struct Query;
@@ -20,5 +22,18 @@ impl Query {
         match user_res {
             _ => {format!("inserted")},
         }
+    }
+
+    pub async fn get_all_users(db: &DbConn, page: u64, page_size: u64) -> Result<(Vec<serde_json::Value>, u64), DbErr> {
+        let paginator = Users::find()
+            .order_by_asc(users::Column::Uuid)
+            .into_json()
+            .paginate(db, page_size);
+        let num_pages = paginator.num_pages().await?;
+        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+    }
+
+    pub async fn get_one_user(db: &DbConn, user_id: Uuid) -> Result<Option<users::Model>, DbErr> {
+        Users::find_by_id(user_id).one(db).await
     }
 }
