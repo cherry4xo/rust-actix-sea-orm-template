@@ -21,6 +21,8 @@ env_logger = { version = "*" }
 log = { version = "*" }
 chrono = { version = "*" }
 datetime = { version = "*" }
+argon2 = { version = "*" } 
+tracing = { version = "*" }
 
 [dependencies.uuid]
 version = "1.10.0"

@@ -21,7 +21,7 @@ async fn create_user(data: web::Json<users::UserCreate>, state: web::Data<AppSta
 }
 
 #[get("/")]
-async fn get_all_users(req: HttpRequest, state: web::Data<AppState>) -> web::Json<Vec<serde_json::Value>> {
+async fn get_all_users(req: HttpRequest, state: web::Data<AppState>) -> web::Json<serde_json::Value> {
     let conn = &state.conn;
     let params = web::Query::<users::Params>::from_query(req.query_string()).unwrap();
     let page = params.page.unwrap_or(1);
@@ -29,6 +29,8 @@ async fn get_all_users(req: HttpRequest, state: web::Data<AppState>) -> web::Jso
     let (users, num_pages) = Query::get_all_users(conn, page, page_size)
         .await
         .expect("Cannot find users in page");
-    println!("{:?}", users);
-    web::Json(vec!(json!(users)))
+    web::Json(json!({
+        "users": users,
+        "num_pages": num_pages
+    }))
 }

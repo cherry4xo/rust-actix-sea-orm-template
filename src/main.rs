@@ -6,6 +6,7 @@ pub mod handlers;
 pub mod models;
 pub mod schemas;
 pub mod service;
+pub mod utils;
 use handlers::{root, users, AppState};
 use models::{DATABASE_URL, DATABASE_NAME};
 
