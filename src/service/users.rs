@@ -41,7 +41,14 @@ impl Query {
         })
     }
 
-    pub async fn get_one_user(db: &DbConn, user_id: Uuid) -> Result<Option<users::Model>, DbErr> {
-        Users::find_by_id(user_id).one(db).await
+    pub async fn get_one_user(db: &DbConn, user_id: Uuid) -> Result<UserGet, DbErr> {
+        let user = Users::find_by_id(user_id).one(db).await;
+        match user {
+            Ok(user_model) => match user_model {
+                Some(u) => Ok(UserGet::from_model(u)),
+                None => Err(DbErr::RecordNotFound(String::from("Record not found")))
+            },
+            Err(err_type) => Err(err_type)
+        }
     }
 }

@@ -1,7 +1,9 @@
 use std::fmt::format;
+use std::str::FromStr;
 use actix_web::{get, http::StatusCode, post, web, HttpResponse, HttpRequest, Responder, Result, Error};
 use sea_orm::*;
 use serde_json::json;
+use uuid::{uuid, Uuid};
 
 use crate::schemas::users;
 use crate::service::users::Query;
@@ -32,4 +34,23 @@ async fn get_all_users(req: HttpRequest, state: web::Data<AppState>) -> web::Jso
         "users": users,
         "num_pages": num_pages
     }))
+}
+
+#[get("/{id}")]
+async fn get_user(path: web::Path<String>, state: web::Data<AppState>) -> Result<HttpResponse, Error> {
+    let conn = &state.conn;
+    let got_id = Uuid::from_str(path.into_inner().as_str());
+    match got_id {
+        Ok(id) => {
+            let user = Query::get_one_user(conn, id).await;
+            match user {
+                Ok(user) => Ok(HttpResponse::Ok().json(user)),
+                Err(e) => {
+                    println!("{:?}", e);
+                    Ok(HttpResponse::NotFound().json("User not found"))
+                }
+            }
+        },
+        Err(_) => Ok(HttpResponse::BadRequest().json("Invalid UUID"))
+    }
 }

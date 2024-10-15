@@ -32,6 +32,7 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/users")
                     .service(users::create_user)
                     .service(users::get_all_users)
+                    .service(users::get_user)
             )
             .default_service(
                 web::route().to(root::page_not_found)
