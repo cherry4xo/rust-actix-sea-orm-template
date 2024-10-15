@@ -12,8 +12,7 @@ async fn create_user(data: web::Json<users::UserCreate>, state: web::Data<AppSta
     let conn = &state.conn;
     let username: String = data.username.clone();
     let email: String = data.username.clone();
-    let mut password: String = data.username.clone();
-    password.push_str("_hashed");
+    let password: String = data.username.clone();
 
     Query::create_user(conn , &username, &email, &password).await;
 

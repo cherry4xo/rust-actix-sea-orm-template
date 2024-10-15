@@ -1,2 +1,2 @@
 mod password;
-pub use password::{};
+pub use password::{hash, verify_password};

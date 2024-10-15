@@ -3,6 +3,8 @@ use uuid::Uuid;
 use datetime::LocalDateTime;
 use chrono::NaiveDate;
 
+use crate::models::entities::{users, users::Entity as Users};
+
 #[derive(Deserialize)]
 pub struct UserCreate {
     pub username: String,
@@ -19,6 +21,32 @@ pub struct UserGet {
     pub registration_date: NaiveDate,
     pub is_admin: bool,
     pub is_confirmed: bool
+}
+
+impl UserGet {
+    pub fn new(uuid: Uuid, username: String, email: String, password_hash: String, registration_date: NaiveDate, is_admin: bool, is_confirmed: bool) -> Self {
+        UserGet {
+            uuid,
+            username,
+            email,
+            password_hash,
+            registration_date,
+            is_admin,
+            is_confirmed
+        }
+    }
+
+    pub fn from_model(user: users::Model) -> Self {
+        UserGet {
+            uuid: user.uuid,
+            username: user.username,
+            email: user.email,
+            password_hash: user.password_hash,
+            registration_date: user.registration_date,
+            is_admin: user.is_admin,
+            is_confirmed: user.is_confirmed,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
